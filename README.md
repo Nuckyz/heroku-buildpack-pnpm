@@ -8,6 +8,8 @@ It supports pnpm in addition to yarn/npm. As long as the root of your project co
 
 This will run a regular `pnpm install` in the Heroku environment. Dev dependencies will be installed for build scripts and pruned later. You can choose to not install dev dependencies by setting the PNPM_PRODUCTION environment variable to true.
 
+Additionally, you can set the NO_OPTIONAL environment variable to true to skip installing optional dependencies.
+
 The pnpm store will automatically be cached, you do not need to specify additional cache directories manually.
 
 For more information about using this Node.js buildpack on Heroku, see these Dev Center articles:
