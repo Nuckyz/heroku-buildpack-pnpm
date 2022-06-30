@@ -143,16 +143,16 @@ yarn_node_modules() {
 pnpm_node_modules() {
   local build_dir=${1:-}
   local production=${PNPM_PRODUCTION:-false}
-  
-  local node_env=${NODE_ENV:-production}
+
+  local old_node_env=${NODE_ENV}
 
   NODE_ENV=development
 
   echo "Installing node modules (pnpm-lock.yaml)"
   cd "$build_dir" || return
   monitor "pnpm-install" pnpm install
-  
-  NODE_ENV=${node_env}
+
+  NODE_ENV=${old_node_env}
 }
 
 yarn_2_install() {
