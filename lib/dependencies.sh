@@ -146,13 +146,37 @@ pnpm_node_modules() {
 
   local old_node_env=${NODE_ENV}
 
-  NODE_ENV=development
+  if [ "$production" != "true" ]; then
+    NODE_ENV=development
+  fi
 
   echo "Installing node modules (pnpm-lock.yaml)"
   cd "$build_dir" || return
   monitor "pnpm-install" pnpm install
 
   NODE_ENV=${old_node_env}
+}
+
+pnpm_prune_devdependencies() {
+  local build_dir=${1:-}
+
+  if [ "$NODE_ENV" == "test" ]; then
+    echo "Skipping because NODE_ENV is 'test'"
+    meta_set "skipped-prune" "true"
+    return 0
+  elif [ "$NODE_ENV" != "production" ]; then
+    echo "Skipping because NODE_ENV is not 'production'"
+    meta_set "skipped-prune" "true"
+    return 0
+  elif [ -n "$PNPM_PRODUCTION" ]; then
+    echo "Skipping because PNPM_PRODUCTION is '$PNPM_PRODUCTION'"
+    meta_set "skipped-prune" "true"
+    return 0
+  else
+    cd "$build_dir" || return
+    monitor "pnpm-prune" pnpm prune --prod 2>&1
+    meta_set "skipped-prune" "false"
+  fi
 }
 
 yarn_2_install() {

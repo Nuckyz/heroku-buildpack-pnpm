@@ -143,6 +143,8 @@ kv_pair "yarn_install_time" "$(meta_get "yarn-install-time")"
 kv_pair "yarn_install_memory" "$(meta_get "yarn-install-memory")"
 kv_pair "npm_prune_time" "$(meta_get "yarn-prune-time")"
 kv_pair "npm_prune_memory" "$(meta_get "yarn-prune-memory")"
+kv_pair "pnpm_prune_time" "$(meta_get "pnpm-prune-time")"
+kv_pair "pnpm_prune_memory" "$(meta_get "pnpm-prune-memory")"
 kv_pair "yarn_prune_time" "$(meta_get "yarn-prune-time")"
 kv_pair "yarn_prune_memory" "$(meta_get "yarn-prune-memory")"
 
