@@ -134,15 +134,17 @@ log_build_scripts() {
 yarn_node_modules() {
   local build_dir=${1:-}
   local production=${YARN_PRODUCTION:-false}
+  local no_optional=${NO_OPTIONAL:-false}
 
   echo "Installing node modules (yarn.lock)"
   cd "$build_dir" || return
-  monitor "yarn-install" yarn install --production="$production" --frozen-lockfile --ignore-engines --prefer-offline 2>&1
+  monitor "yarn-install" yarn install --production="$production" --ignore-optional="$no_optional" --frozen-lockfile --ignore-engines --prefer-offline 2>&1
 }
 
 pnpm_node_modules() {
   local build_dir=${1:-}
   local production=${PNPM_PRODUCTION:-false}
+  local no_optional=${NO_OPTIONAL:-false}
 
   local old_node_env=${NODE_ENV}
 
@@ -152,7 +154,7 @@ pnpm_node_modules() {
 
   echo "Installing node modules (pnpm-lock.yaml)"
   cd "$build_dir" || return
-  monitor "pnpm-install" pnpm install
+  monitor "pnpm-install" pnpm install --no-optional="$no_optional"
 
   NODE_ENV=${old_node_env}
 }
@@ -265,6 +267,7 @@ should_use_npm_ci() {
 npm_node_modules() {
   local build_dir=${1:-}
   local production=${NPM_CONFIG_PRODUCTION:-false}
+  local no_optional=${NO_OPTIONAL:-false}
 
   if [ -e "$build_dir/package.json" ]; then
     cd "$build_dir" || return
@@ -272,7 +275,7 @@ npm_node_modules() {
     if [[ "$(should_use_npm_ci "$build_dir")" == "true" ]] && [[ "$USE_NPM_INSTALL" != "true" ]]; then
       meta_set "use-npm-ci" "true"
       echo "Installing node modules"
-      monitor "npm-install" npm ci --production="$production" --unsafe-perm --userconfig "$build_dir/.npmrc" 2>&1
+      monitor "npm-install" npm ci --production="$production" --no-optional="$no_optional" --unsafe-perm --userconfig "$build_dir/.npmrc" 2>&1
     else
       meta_set "use-npm-ci" "false"
       if [ -e "$build_dir/package-lock.json" ]; then
@@ -282,7 +285,7 @@ npm_node_modules() {
       else
         echo "Installing node modules (package.json)"
       fi
-      monitor "npm-install" npm install --production="$production" --unsafe-perm --userconfig "$build_dir/.npmrc" 2>&1
+      monitor "npm-install" npm install --production="$production" --no-optional="$no_optional" --unsafe-perm --userconfig "$build_dir/.npmrc" 2>&1
     fi
   else
     echo "Skipping (no package.json)"
@@ -292,6 +295,7 @@ npm_node_modules() {
 npm_rebuild() {
   local build_dir=${1:-}
   local production=${NPM_CONFIG_PRODUCTION:-false}
+  local no_optional=${NO_OPTIONAL:-false}
 
   if [ -e "$build_dir/package.json" ]; then
     cd "$build_dir" || return
@@ -302,7 +306,7 @@ npm_rebuild() {
     else
       echo "Installing any new modules (package.json)"
     fi
-    monitor "npm-rebuild" npm install --production="$production" --unsafe-perm --userconfig "$build_dir/.npmrc" 2>&1
+    monitor "npm-rebuild" npm install --production="$production" --no-optional="$no_optional" --unsafe-perm --userconfig "$build_dir/.npmrc" 2>&1
   else
     echo "Skipping (no package.json)"
   fi
