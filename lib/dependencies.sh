@@ -161,6 +161,7 @@ pnpm_node_modules() {
 
 pnpm_prune_devdependencies() {
   local build_dir=${1:-}
+  local no_optional=${NO_OPTIONAL:-false}
 
   if [ "$NODE_ENV" == "test" ]; then
     echo "Skipping because NODE_ENV is 'test'"
@@ -176,7 +177,8 @@ pnpm_prune_devdependencies() {
     return 0
   else
     cd "$build_dir" || return
-    monitor "pnpm-prune" pnpm prune --prod 2>&1
+    monitor "pnpm-prune-directory" rm -rf "./node_modules" 2>&1
+    monitor "pnpm-prune-install" pnpm install --prod --no-optional="$no_optional" 2>&1
     meta_set "skipped-prune" "false"
   fi
 }
